@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Classifier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #219c90;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1a7c6b;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Spam/Ham Email Classifier</h1>
+        
+        <textarea id="email-text" rows="6" placeholder="Enter email text here..."></textarea><br><br>
+        
+        <button onclick="checkEmail()">Check Email</button><br><br>
+        
+        <h3 id="result"></h3> <!-- Where the result will be shown -->
+    </div>
+
+    <script>
+        function checkEmail() {
+            // Get the email text from the textarea
+            var emailText = document.getElementById('email-text').value;
+
+            // Check if there's input
+            if (emailText.trim() === "") {
+                alert("Please enter an email text!");
+                return;
+            }
+
+            // Send the text to the Flask backend
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email_text: emailText }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Show the result
+                document.getElementById('result').textContent = "Result: " + data.result;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').textContent = "An error occurred. Please try again.";
+            });
+        }
+    </script>
+</body>
+</html>
